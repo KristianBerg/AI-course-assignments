@@ -20,7 +20,7 @@ class Perceptron:
     
     def train(self, label, example, learn_rate = 1):
         example = num.array(example)
-        self.weights += ((label - self.classify(example)) * example)
+        self.weights += (learn_rate * (label - self.classify(example)) * example)
 
     def batch_classify(self, examples):
         return num.rint(num.greater(self.weights.dot(examples), 0))
