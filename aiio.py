@@ -17,9 +17,11 @@ def input_file(filename):
 def add_class(class_label, iterable):
     return list(map(lambda x: (class_label, x), iterable))
 
+
 def to_batch(classed_list):
     labels, feats = map(lambda x: np.array(x), zip(*classed_list))
     return (labels.T, feats.T)
+
 
 def format_LIBSVM(lst):
     str = ''
@@ -44,7 +46,8 @@ def read_LIBVSM(iterable, num_feat):
     for line in iterable:
         mat = label.match(line)
         features = [1] + [0] * num_feat
-        for index, value in feature.finditer(line, mat.end()):
+        for item in feature.finditer(line, mat.end()):
+            index, value = item.groups()
             features[int(index)] = float(value)
         arr.append((int(mat.group()), features))
     return arr
