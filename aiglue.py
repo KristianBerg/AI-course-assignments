@@ -20,7 +20,7 @@ def train_perceptron(perceptron, labels, feats, iter_count):
 
 def plot_prediction(labels, feats):
     classfilter = lambda c: \
-                  [feats[1:,i] for i in range(len(labels)) if labels[i] == c]
+                  numpy.transpose([feats[1:,i] for i in range(len(labels)) if labels[i] == c])
     red = classfilter(0)
     blue = classfilter(1)
     pyplot.plot(red[0], red[1], 'r.')
