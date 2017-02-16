@@ -39,13 +39,12 @@ def write_LIBVSM(lst, filename):
     
 def read_LIBVSM(iterable, num_feat):
     label = re.compile(r'(\d+)')
-    feature = re.compile(r'\s*(\d+:\d+)')
+    feature = re.compile(r'\s*(\d+):(\d+)')
     arr = []
     for line in iterable:
         mat = label.match(line)
         features = [1] + [0] * num_feat
-        for item in feature.finditer(line, mat.end()):
-            index, value = item.group().split(':')
+        for index, value in feature.finditer(line, mat.end()):
             features[int(index)] = float(value)
         arr.append((int(mat.group()), features))
     return arr

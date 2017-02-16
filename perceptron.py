@@ -1,9 +1,13 @@
 import aiio
 import numpy as num
+import random as rand
 
 class Perceptron:
     def __init__(self, init_wts):
-        self.weights = num.array(init_wts).reshape(1,-1)
+        if isinstance(init_wts, int):
+            self.weights = num.array([rand.random() for _ in range(init_wts)])
+        else:
+            self.weights = num.array(init_wts).reshape(1,-1)
         
     def __str__(self):
         return repr(self)
@@ -11,19 +15,11 @@ class Perceptron:
     def __repr__(self):
         return "Perceptron, weights: " + repr(self.weights)
 
-    def train(self, label, example):
-        prediction = int(num.dot(self.weights, example) > 0)
-        if prediction == label:
-            return
-        if prediction != label:
-            self.weights += ((label - prediction) * example)
-            return
-        
-
     def classify(self, example):
-        return int(num.dot(self.weights, example) > 0)
+        return int(self.weights.dot(example) > 0)
+    
+    def train(self, label, example):
+        self.weights += ((label - self.classify(example)) * example)        
 
-
-    def batch_train(self, labels, examples):        
-        result = num.rint(num.greater(self.weights.dot(examples), 0))
-        self.weights += num.sum(examples.dot(labels.T - result.T), axis=1)
+    def batch_classify(self, examples):
+        return num.rint(num.greater(self.weights.dot(examples), 0))
