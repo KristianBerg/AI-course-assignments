@@ -3,6 +3,8 @@ import numpy as np
 
 
 def input_file(filename):
+    """Read a file in the format of those given and returns a matrix.
+    """
     with open(filename) as file:
         arr = []
         pattern = re.compile(r'(\d+)\s+(\d+)')
@@ -15,10 +17,12 @@ def input_file(filename):
 
 
 def add_class(class_label, iterable):
+    """Zip every element with it's class label."""
     return list(map(lambda x: (class_label, x), iterable))
 
 
 def to_batch(classed_list):
+    """Unzip features and classes and turn them into np-arrays"""
     labels, feats = map(lambda x: np.array(x), zip(*classed_list))
     return (labels.T, feats.T)
 
@@ -54,11 +58,15 @@ def read_LIBVSM(iterable, num_feat):
 
 
 def input_LIBVSM(filename, num_feat):
+    """Read from file LIBSVM data with given number of features."""
     with open(filename) as file:
         return read_LIBVSM(file, num_feat)
 
     
 def input_dense_LIBVSM(filename):
+    """Read from file dense (all features represented on every line) LIBSVM 
+    data.
+    """
     with open(filename) as file:
         num_feat = len(re.findall(':', file.readline()))
         file.seek(0)
