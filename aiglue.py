@@ -14,23 +14,31 @@ def normalize(feats):
 feats3 = normalize(datapoints)
 feats2 = normalize(np.vstack([feats3[0,:], feats3[2,:] / feats3[1,:]]))
 
-learn_rate = 0.001
-
-def train_stoch(perceptron, labels, feats, error_max = 0.1, epoch_max = 100):
+def train_stoch(perceptron,
+                labels,
+                feats,
+                error_max = 0.1,
+                epoch_max = 100,
+                learn_rate = 0.1):
     for _ in range(epoch_max):
         perm = np.random.permutation(np.vstack([labels,feats]).T)
         for row in perm:
-            perceptron.train(row[0], row[1:], learn_rate / len(feats))
+            perceptron.train(row[0], row[1:], learn_rate / len(feats[0]))
         """if np.abs(labels - perceptron.batch_classify(feats)).sum() \
            <= error_max * len(labels):
             return"""
 
-def train_batch(logit, labels, feats, error_max):
-    while True:
+def train_batch(logit,
+                labels,
+                feats,
+                error_max = 0.1,
+                epoch_max = 100,
+                learn_rate = 0.1):
+    for _ in range(epoch_max):
         logit.batch_train(labels, feats, 1)
-        if np.abs(labels - logit.batch_classify(feats)).sum() \
+        """if np.abs(labels - logit.batch_classify(feats)).sum() \
             <= error_max * len(labels):
-            return
+            return"""
         
 def plot_prediction(labels, feats):
     classfilter = lambda c: \
@@ -45,7 +53,7 @@ def plot_3wts(weights):
     plt.plot(line[0], line[1])
 
 def plot_2wts(weights):
-    plot_3wts(np.vstack(weights, ones(1))
+    plot_3wts(np.vstack(weights, ones(1)))
 
 def plot(perceptron):
     plot_prediction(labels, feats3)
@@ -55,11 +63,11 @@ def error(perceptron, labels, features):
     return np.abs(labels - perceptron.batch_classify(features)).sum()
     
     
-def iter(perceptron):
+def iter(perceptron, learn_rate):
     plt.ion()
     fig = plt.figure()
     for i in range(100):
-        train_stoch(perceptron, labels, feats3, epoch_max=1)
+        train_stoch(perceptron, labels, feats3, epoch_max=1, learn_rate = learn_rate)
         fig.canvas.draw()
         plot(perceptron)
         if error(perceptron, labels, feats3) == 0:
