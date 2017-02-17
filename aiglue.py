@@ -8,7 +8,7 @@ import time
 
 def normalize(feats):
     matr = feats.copy(order='F');
-    matr[1:,:] /= matr[1:,:].max()
+    matr /= matr.max()
     return matr
 
 feats3 = normalize(datapoints)
@@ -17,28 +17,30 @@ feats2 = normalize(np.vstack([feats3[0,:], feats3[2,:] / feats3[1,:]]))
 def train_stoch(perceptron,
                 labels,
                 feats,
-                error_max = 0.1,
+                error_max = 0,
                 epoch_max = 100,
                 learn_rate = 0.1):
-    for _ in range(epoch_max):
+    for i in range(epoch_max):
         perm = np.random.permutation(np.vstack([labels,feats]).T)
         for row in perm:
             perceptron.train(row[0], row[1:], learn_rate / len(feats[0]))
-        """if np.abs(labels - perceptron.batch_classify(feats)).sum() \
-           <= error_max * len(labels):
-            return"""
+        if np.abs(labels - perceptron.batch_classify(feats)).sum() \
+           <= error_max:
+            print("Done at epoch " + repr(i))
+            return
 
 def train_batch(logit,
                 labels,
                 feats,
-                error_max = 0.1,
+                error_max = 0,
                 epoch_max = 100,
                 learn_rate = 0.1):
-    for _ in range(epoch_max):
+    for i in range(epoch_max):
         logit.batch_train(labels, feats, 1)
-        """if np.abs(labels - logit.batch_classify(feats)).sum() \
-            <= error_max * len(labels):
-            return"""
+        if np.abs(labels - logit.batch_classify(feats)).sum() \
+           <= error_max:
+            print("Done at epoch " + repr(i))
+            return
         
 def plot_prediction(labels, feats):
     classfilter = lambda c: \

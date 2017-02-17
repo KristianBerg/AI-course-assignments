@@ -13,5 +13,5 @@ class Logit(perceptron.Perceptron):
             ))
 
     def train(self, label, example, learn_rate = 1):
-        self.weights += learn_rate * example * (
-            label - 1 /  (1 + np.exp(np.negative(self.weights.dot(example)))))
+        self.weights += (learn_rate * example * (
+            label - 1 / (1 + np.exp(-self.weights.dot(example)))))
