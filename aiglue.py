@@ -1,7 +1,7 @@
 import aiio
-import numpy
+import numpy as np
 import random as rand
-import matplotlib.pyplot as pyplot
+from matplotlib import pyplot
 
 (labels, datapoints) = aiio.to_batch(aiio.input_dense_LIBVSM('data'))
 
@@ -11,16 +11,26 @@ def normalize(feats):
     return matr
 
 feats3 = normalize(datapoints)
-feats2 = normalize(numpy.vstack([feats3[0,:], feats3[2,:] / feats3[1,:]]))
+feats2 = normalize(np.vstack([feats3[0,:], feats3[2,:] / feats3[1,:]]))
 
-def train_perceptron(perceptron, labels, feats, iter_count):
-    for t in range(1,iter_count):
+def train_stoch(perceptron, labels, feats, error_max):
+    while True:
         ex = rand.randint(0, len(labels)-1)
-        perceptron.train(labels[ex], feats[:,ex], 1000/(1000 + t))
+        perceptron.train(labels[ex], feats[:,ex])
+        if np.abs(labels - perceptron.batch_classify(feats)).sum() \
+           <= error_max * len(labels):
+            return
 
+def train_logit(logit, labels, feats, error_max):
+    while True:
+        logit.batch_train(labels, feats, 1)
+        if np.abs(labels - logit.batch_classify(feats)).sum() \
+            <= error_max * len(labels):
+            return
+        
 def plot_prediction(labels, feats):
     classfilter = lambda c: \
-                  numpy.transpose([feats[1:,i] for i in range(len(labels)) if labels[i] == c])
+                  np.transpose([feats[1:,i] for i in range(len(labels)) if labels[i] == c])
     red = classfilter(0)
     blue = classfilter(1)
     pyplot.plot(red[0], red[1], 'r.')
@@ -28,7 +38,7 @@ def plot_prediction(labels, feats):
 
     
 def plot_weights(weights):
-    line = numpy.transpose([[0,weights.dot([1,0])], [1, weights.dot([1,1])]])
+    line = np.transpose([[0,weights.dot([1,0])], [1, weights.dot([1,1])]])
     pyplot.plot(line[0], line[1])
 
 def plot(perceptron):
@@ -37,5 +47,5 @@ def plot(perceptron):
     pyplot.show()
 
 def iter(perceptron):
-    train_perceptron(perceptron, labels, feats2, 1000)
+    train_perceptron(perceptron, labels, feats2, 0.1)
     plot(perceptron)
