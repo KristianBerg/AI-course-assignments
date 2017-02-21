@@ -11,11 +11,11 @@ class Logit(perceptron.Perceptron):
         """Run weight update on a matrix of examples"""
         self.weights += ((learn_rate / len(labels)) * 
             examples.dot( 
-                labels - 1 / 
+                labels - 1.0 / 
                 (np.ones(len(labels)) + np.exp(-self.weights.dot(examples))) 
             ))
 
     def train(self, label, example, learn_rate = 1):
         """Run weight update on a single example"""
         self.weights += (learn_rate * example * (
-            label - 1 / (1 + np.exp(-self.weights.dot(example)))))
+            label - 1.0 / (1 + np.exp(-self.weights.dot(example)))))

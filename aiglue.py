@@ -2,7 +2,7 @@
 import aiio
 import numpy as np
 import random as rand
-from matplotlib import pyplot as plt
+import matplotlib.pyplot as plt
 
 (labels, datapoints) = aiio.to_batch(aiio.input_dense_LIBVSM('data'))
 
@@ -17,32 +17,20 @@ feats2 = normalize(np.vstack([feats3[0,:], feats3[2,:] / feats3[1,:]]))
 def train_stoch(perceptron,
                 labels,
                 feats,
-                error_max = 0,
-                epoch_max = 100,
                 learn_rate = 0.1):
     """Do a stochastic training run for a unit"""
-    for i in range(epoch_max):
-        perm = np.random.permutation(np.vstack([labels,feats]).T)
-        for row in perm:
-            perceptron.train(row[0], row[1:], learn_rate / len(feats[0]))
-        if np.abs(labels - perceptron.batch_classify(feats)).sum() \
-           <= error_max:
-            return
+    perm = np.random.permutation(np.vstack([labels,feats]).T)
+    for row in perm:
+        perceptron.train(row[0], row[1:], float(learn_rate) / len(feats[0]))
 
-def train_batch(logit,
+def logit_train_batch(logit,
                 labels,
                 feats,
-                error_max = 0,
-                epoch_max = 100,
                 learn_rate = 0.1):
     """Do a batch training run for a unit (batch training only implemented
     for logit units)
     """
-    for i in range(epoch_max):
-        logit.batch_train(labels, feats, 1)
-        if np.abs(labels - logit.batch_classify(feats)).sum() \
-           <= error_max:
-            return
+    logit.batch_train(labels, feats, float(lear_rate) / len(labels))
         
 def plot_prediction(labels, feats):
     classfilter = lambda c: \
@@ -68,19 +56,16 @@ def plot(perceptron):
 def error(perceptron, labels, features):
     return np.abs(labels - perceptron.batch_classify(features)).sum()
     
-    
 def iter(perceptron, learn_rate):
-    """Run 100 training iterations for a unit, or until zero error, plot lines
-    throughout
+    """Run 100 training iterations for a perceptron, or until zero error, plot 
+    lines throughout
     """
     plt.ion()
     fig = plt.figure()
     for i in range(100):
-        train_stoch(perceptron, labels, feats3, epoch_max=1, learn_rate = learn_rate)
+        train_stoch(perceptron, labels, feats3, learn_rate = learn_rate)
         fig.canvas.draw()
         plot(perceptron)
         if error(perceptron, labels, feats3) == 0:
             print(repr(i) + " epochs")
             break
-    
-        
