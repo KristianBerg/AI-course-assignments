@@ -17,5 +17,6 @@ class Logit(perceptron.Perceptron):
 
     def train(self, label, example, learn_rate = 1):
         """Run weight update on a single example"""
+	k = np.power(10,8)
         self.weights += (learn_rate * example * (
-            label - 1.0 / (1 + np.exp(-self.weights.dot(example)))))
+            label - 1.0 / (1 + np.exp(-k*self.weights.dot(example)))))
