@@ -92,7 +92,6 @@ allData = [enTotal, enA, frTotal, frA]
 
 scaleConst = max(max(enTotal), max(frTotal))
 scale(allData, scaleConst)
-#scale(allData, max(max(enA), max(frA)))
 
 batchEn = batchGradientDescent(np.array(enA), np.array(enTotal))
 batchFr = batchGradientDescent(np.array(frA), np.array(frTotal))
